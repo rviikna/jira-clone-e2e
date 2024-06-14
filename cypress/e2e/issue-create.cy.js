@@ -177,4 +177,26 @@ describe("Issue create", () => {
         cy.get('[data-testid="icon:task"]').should("be.visible");
       });
   });
+
+  it.only("Should verify removing unnecessary spaces on the board view", () => {
+    const title = "   Hello   world!   ";
+    const description = "Just a description";
+    const trimmedTitle = title.trim();
+
+    cy.get(".ql-editor").type(description).should("have.text", description);
+    cy.get('input[name="title"]').type(title).should("have.value", title);
+    cy.get('button[type="submit"]').click();
+
+    cy.get('[data-testid="modal:issue-create"]').should("not.exist");
+    cy.contains("Issue has been successfully created.").should("be.visible");
+
+    cy.reload();
+
+    cy.contains("Issue has been successfully created.").should("not.exist");
+
+    cy.get('[data-testid="board-list:backlog"]').should(
+      "contain",
+      trimmedTitle
+    );
+  });
 });
